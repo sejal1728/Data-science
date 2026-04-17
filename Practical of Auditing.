@@ -1,0 +1,37 @@
+Practical of Auditing.
+Code:
+# Practical No: 7 - Auditing
+import pandas as pd
+# Step 1: Create sample financial data
+data = {
+    "Transaction_ID": [1,2,3,4,5],
+    "Amount": [1000, 2000, -500, 3000, 1500],
+    "Approved": ["Yes", "Yes", "No", "Yes", "Yes"]
+}
+df = pd.DataFrame(data)
+# Step 2: Save data
+df.to_csv("audit_data.csv", index=False)
+# Step 3: Load data
+df = pd.read_csv("audit_data.csv")
+# Step 4: Audit Checks
+# 1. Check for negative values (possible error/fraud)
+negative_values = df[df["Amount"] < 0]
+# 2. Check for unapproved transactions
+unapproved = df[df["Approved"] == "No"]
+# 3. Summary report
+total_amount = df["Amount"].sum()
+# Step 5: Print audit results
+print("Total Amount:", total_amount)
+print("\nNegative Transactions (Issues):")
+print(negative_values)
+print("\nUnapproved Transactions (Issues):")
+print(unapproved)
+# Step 6: Save audit report
+df.to_csv("audit_report.csv", index=False)
+print("\nAudit Completed! Report saved.")
+# Download (Colab only)
+from google.colab import files
+files.download("audit_report.csv")
+
+Output:
+ 
