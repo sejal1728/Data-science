@@ -1,0 +1,109 @@
+Practical of Utilities.
+Code:
+#1 Removing leading or lagging spaces from a data entry
+import string
+import datetime as dt
+print ('#1 Removing leading or lagging spaces from a data entry');
+baddata="Data Science with too many spaces is bad!!!"
+print('>',baddata,'<')
+cleandata=baddata.strip()
+print('>',cleandata,'<')
+Output:
+ 
+#2 Removing nonprintable characters from a data entry
+import string
+import datetime as dt
+print('#2 Removing nonprintable characters from a data entry')
+printable = set(string.printable)
+baddata = "Data\x00Science with\x02 funny characters is \x10bad!!!"
+cleandata = "".join(filter(lambda x: x in printable, baddata))
+print('Bad Data :', baddata)
+print('Clean Data:', cleandata)
+Output:
+ 
+
+# 3 Reformatting data entry to match specific formatting criteria
+import string
+import datetime as dt
+# Convert YYYY/MM/DD to DD Month YYYY
+print('# 3 Reformatting data entry to match specific formatting criteria.')
+baddate = dt.date(2019, 10, 31)
+baddata=format(baddate,'%Y-%m-%d')
+gooddate = dt.datetime.strptime(baddata,'%Y-%m-%d')
+gooddata=format(gooddate,'%d %B %Y')
+print('Bad Data : ',baddata)
+print('Good Data : ',gooddata)
+Output:
+ 
+A. Data Binning or Bucketing
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+np.random.seed(0)  # Example data
+mu = 90  # Mean of distribution
+sigma = 25  # Standard deviation of distribution
+x = mu + sigma * np.random.randn(5000)  # Generate random data
+num_bins = 25  # Number of bins in the histogram
+# Create figure and axis objects
+fig, ax = plt.subplots()
+# The histogram of the datan, bins, patches = ax.hist(x, num_bins, density=1, alpha=0.6, color='g')
+
+# Add a 'best fit' line for normal distribution
+y = stats.norm.pdf(bins, mu, sigma)  # Normal PDF
+ax.plot(bins, y, '--', color='r', label='Fit: N(90, 25)')
+# Set labels
+ax.set_xlabel('Example Data')
+ax.set_ylabel('Probability Density')
+# Title with parameters
+sTitle = f'Histogram {len(x)} entries into {num_bins} bins: $\mu={mu}$, $\sigma={sigma}$'
+ax.set_title(sTitle)
+# Layout adjustments
+fig.tight_layout()
+# Display the plot
+plt.show()
+Output:
+ 
+
+
+
+B. Averaging of Data
+The use of averaging of features value enables the reduction of data volumes in a control fashion to improve effective data processing.
+Functions Used in the Code :
+df.groupby("Category").mean()
+* Groups the dataset by a specified column (e.g., "Category") and calculates the mean for numerical features.
+* Useful for aggregating data based on categorical values.
+Code:	
+import pandas as pd
+
+data = {
+    "Category": ["A","A","A","B","B","C","C"],
+    "Value1": [10,20,30,40,50,60,70],
+    "Value2": [20,30,40,50,60,70,80],
+    "Value3": [30,40,50,60,70,80,90]
+}
+
+df = pd.DataFrame(data)
+df.to_csv("IP_DATA_CORE.csv", index=False)
+print("Sample CSV created!")
+
+# Load dataset
+df = pd.read_csv("IP_DATA_CORE.csv")
+
+# Data reduction
+if "Category" in df.columns:
+    df_reduced = df.groupby("Category").mean()
+else:
+    df_reduced = df.mean(numeric_only=True).to_frame().T
+
+# Save file
+df_reduced.to_csv("data_reduced.csv", index=True)
+
+print("Data reduction complete!")
+
+# Download (Colab only)
+from google.colab import files
+files.download("data_reduced.csv")
+Output:
+ 
+
+
