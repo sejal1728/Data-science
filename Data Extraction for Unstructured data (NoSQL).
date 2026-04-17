@@ -1,0 +1,29 @@
+Data Extraction for Unstructured data (NoSQL).
+import pymongo
+import json
+try:
+# Connect to MongoDB
+client = pymongo.MongoClient("mongodb://localhost:27017")
+client.admin.command('ping')
+print("Connection established to MongoDB")
+except pymongo.errors.PyMongoError as e:
+print("Failed to connect to MongoDB:", e)
+exit(1)  # Exit script if connection fails
+
+# Connect to database and collection
+db = client["data_extract"]
+collection = db["unstructured_data"]
+# Sample unstructured data (JSON)
+json_data = '''
+[
+{"name": "Alice", "email": "alice@example.com", "address": "123 Street, NY"},
+{"name": "Bob", "email": "bob@example.com", "address": "456 Avenue, CA"}
+]
+'''
+# Load JSON and insert into MongoDB
+data = json.loads(json_data)
+collection.insert_many(data)
+
+# Retrieve and print inserted data
+for record in collection.find():
+print(record)
