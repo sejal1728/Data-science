@@ -1,0 +1,199 @@
+Conversion from different formats to HORUS format
+A) Picture (JPEG)
+B) Video
+C) Audio
+
+A) Picture (JPEG) to HORUS Format
+Code:
+# Import libraries
+# Import libraries
+from google.colab import files
+uploaded = files.upload()
+
+import imageio.v2 as imageio
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load Image
+InputData = imageio.imread("flower.jpg")
+
+# Display Image Details
+print("Height:", InputData.shape[0])
+print("Width:", InputData.shape[1])
+print("Channels:", InputData.shape[2])
+
+# Flatten image data
+ProcessRawData = InputData.flatten()
+
+# Reshape into DataFrame
+num_channels = InputData.shape[2]
+rows = int(len(ProcessRawData) / num_channels)
+
+ProcessData = pd.DataFrame(
+    np.reshape(ProcessRawData, (rows, num_channels))
+)
+
+# Rename columns
+if num_channels == 3:
+    ProcessData.columns = ['Red', 'Green', 'Blue']
+else:
+    ProcessData.columns = ['Red', 'Green', 'Blue', 'Alpha']
+
+# Show Image
+plt.imshow(InputData)
+plt.axis('off')
+plt.show()
+
+# Save to HORUS CSV
+ProcessData.to_csv("HORUS_Picture.csv", index=False)
+
+print("Picture to HORUS - Done")
+
+Output:
+ 
+B) Video to HORUS Format
+# STEP 1: Upload Video
+from google.colab import files
+uploaded = files.upload()
+
+video_name = list(uploaded.keys())[0]
+print("Uploaded file:", video_name)
+
+# STEP 2: Import Libraries
+import cv2
+import os
+import pandas as pd
+import numpy as np
+from IPython.display import clear_output
+
+# STEP 3: Read Video
+video = cv2.VideoCapture(video_name)
+
+if not video.isOpened():
+    print("Error: Cannot open video")
+    exit()
+# Create frames folder
+os.makedirs("frames", exist_ok=True)
+
+# STEP 4: Extract Frames (Skip frames for speed)
+count = 0
+saved_count = 0
+while True:
+    success, image = video.read()
+    if not success:
+        break
+
+    # Save only every 5th frame (🔥 speed improvement)
+    if count % 5 == 0:
+        cv2.imwrite(f"frames/frame_{saved_count}.jpg", image)
+        saved_count += 1
+
+    if count % 20 == 0:
+        clear_output(wait=True)
+        print(f"Extracting frames... {count} processed")
+
+    count += 1
+
+print("Total Frames Extracted:", saved_count)
+
+# STEP 5: Convert Frames → HORUS (FAST)
+frames_data = []
+
+files_list = sorted(os.listdir("frames"))
+
+if len(files_list) == 0:
+    print("No frames found!")
+    exit()
+
+for i, file in enumerate(files_list):
+
+    path = os.path.join("frames", file)
+    img = cv2.imread(path)
+
+    if img is None:
+        continue
+
+    # 🔥 Resize image (MOST IMPORTANT for speed)
+    img = cv2.resize(img, (64, 64))
+
+    data = img.flatten()
+
+    df = pd.DataFrame(
+        np.reshape(data, (-1, 3)),
+        columns=['Red', 'Green', 'Blue']
+    )
+
+    df['FrameName'] = file
+    frames_data.append(df)
+
+    if i % 10 == 0:
+        clear_output(wait=True)
+        print(f"Converting to HORUS... {i} frames processed")
+
+# STEP 6: Save CSV
+if frames_data:
+    final_data = pd.concat(frames_data, ignore_index=True)
+    final_data.to_csv("HORUS_Video.csv", index=False)
+
+    print("✅ Video to HORUS - Completed Successfully")
+else:
+    print("No data to save!")
+Output:
+ 
+C) Audio to HORUS Format
+Code:
+# STEP 1: Upload Audio File
+from google.colab import files
+uploaded = files.upload()
+
+audio_file = list(uploaded.keys())[0]
+print("Uploaded file:", audio_file)
+
+# STEP 2: Install & Import Libraries
+!pip install pydub
+
+from pydub import AudioSegment
+from scipy.io import wavfile
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# STEP 3: Convert MP3 → WAV (if needed)
+if audio_file.endswith(".mp3"):
+    sound = AudioSegment.from_mp3(audio_file)
+    wav_file = "converted_audio.wav"
+    sound.export(wav_file, format="wav")
+else:
+    wav_file = audio_file
+
+# STEP 4: Read WAV File
+rate, data = wavfile.read(wav_file)
+
+print("Sampling Rate:", rate)
+print("Shape:", data.shape)
+
+# STEP 5: Convert to DataFrame
+ProcessData = pd.DataFrame(data)
+
+if len(data.shape) > 1:
+    ProcessData.columns = [f"Ch{i+1}" for i in range(data.shape[1])]
+else:
+    ProcessData.columns = ["Ch1"]
+
+# STEP 6: Plot Waveform
+plt.figure(figsize=(10,4))
+plt.plot(data)
+plt.title("Audio Signal")
+plt.xlabel("Samples")
+plt.ylabel("Amplitude")
+plt.show()
+
+# STEP 7: Save to HORUS
+ProcessData.to_csv("HORUS_Audio.csv", index=False)
+print("✅ Audio to HORUS - Done")
+Output:
+ 
+Result:
+The data from JPEG images, video frames, and audio signals was successfully converted into HORUS (CSV structured) format using Python.
+
+
