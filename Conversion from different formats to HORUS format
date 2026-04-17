@@ -1,0 +1,142 @@
+Conversion from different formats to HORUS format
+A) Text Delimited CSV
+B) XML
+C) JSON
+
+A) CSV to HORUS Format
+Code:
+# Import libraries
+import pandas as pd
+from google.colab import files
+
+# Upload file
+uploaded = files.upload()
+
+# Read CSV file
+InputData = pd.read_csv('Country_Code.csv', encoding='latin-1')
+
+print("Input Data =======================")
+print(InputData)
+
+# Processing
+ProcessData = InputData.copy()
+
+# Remove unwanted columns
+ProcessData.drop(['ISO-2-CODE', 'ISO-3-Code'], axis=1, inplace=True)
+
+# Rename columns
+ProcessData.rename(columns={
+    'Country': 'CountryName',
+    'ISO-M49': 'CountryNumber'
+}, inplace=True)
+
+# Set index
+ProcessData.set_index('CountryNumber', inplace=True)
+
+# Sort data
+ProcessData.sort_values('CountryName', ascending=False, inplace=True)
+
+print("Processed Data (HORUS) ==========")
+print(ProcessData)
+
+print("CSV to HORUS - Done")
+
+Output:
+ 
+B) XML to HORUS Format
+Code:
+# Import libraries
+import pandas as pd
+import xml.etree.ElementTree as ET
+from google.colab import files
+
+# Upload file
+uploaded = files.upload()
+
+# Function: XML to DataFrame
+def xml2df(xml_data):
+    root = ET.XML(xml_data)
+    all_records = []
+
+    for child in root:
+        record = {}
+        for subchild in child:
+            record[subchild.tag] = subchild.text
+        all_records.append(record)
+
+    return pd.DataFrame(all_records)
+
+# Read XML file
+with open('Country_Code.xml', 'r', encoding='utf-8') as file:
+    InputData = file.read()
+
+print("Input XML Data ==================")
+print(InputData)
+
+# Convert XML to DataFrame
+ProcessData = xml2df(InputData)
+
+# Remove unwanted columns
+ProcessData.drop(['ISO-2-CODE', 'ISO-3-Code'], axis=1, inplace=True)
+
+# Rename columns
+ProcessData.rename(columns={
+    'Country': 'CountryName',
+    'ISO-M49': 'CountryNumber'
+}, inplace=True)
+
+# Set index
+ProcessData.set_index('CountryNumber', inplace=True)
+
+# Sort data
+ProcessData.sort_values('CountryName', ascending=False, inplace=True)
+
+print("Processed Data (HORUS) ==========")
+print(ProcessData)
+
+print("XML to HORUS - Done")
+
+Output:
+ 
+C) JSON to HORUS Format
+Code:
+# Import libraries
+import pandas as pd
+from google.colab import files
+
+# Upload file
+uploaded = files.upload()
+
+# Read JSON file
+InputData = pd.read_json('Country_Code.json', encoding='latin-1')
+
+print("Input JSON Data =================")
+print(InputData)
+
+# Processing
+ProcessData = InputData.copy()
+
+# Remove unwanted columns
+ProcessData.drop(['ISO-2-CODE', 'ISO-3-Code'], axis=1, inplace=True)
+
+# Rename columns
+ProcessData.rename(columns={
+    'Country': 'CountryName',
+    'ISO-M49': 'CountryNumber'
+}, inplace=True)
+
+# Set index
+ProcessData.set_index('CountryNumber', inplace=True)
+
+# Sort data
+ProcessData.sort_values('CountryName', ascending=False, inplace=True)
+
+print("Processed Data (HORUS) ==========")
+print(ProcessData)
+
+print("JSON to HORUS - Done")
+
+Output:
+ 
+Result
+The data from CSV, XML, and JSON formats was successfully converted and processed into HORUS structured format using Python and Pandas.
