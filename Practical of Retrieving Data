@@ -1,0 +1,35 @@
+Practical of Retrieving Data
+Code:
+# Practical No: 8 - Retrieving Data
+import pandas as pd
+# Step 1: Create sample dataset
+data = {
+    "ID": [1,2,3,4,5],
+    "Name": ["Amit","Neha","Ravi","Priya","Karan"],
+    "Marks": [85,90,75,88,92]
+}
+df = pd.DataFrame(data)
+# Step 2: Save dataset
+df.to_csv("student_data.csv", index=False)
+# Step 3: Load dataset
+df = pd.read_csv("student_data.csv")
+# Step 4: Retrieve Data
+# 1. Retrieve all data
+print("All Data:\n", df)
+# 2. Retrieve specific column
+print("\nNames:\n", df["Name"])
+# 3. Retrieve rows where Marks > 85
+high_marks = df[df["Marks"] > 85]
+print("\nStudents with Marks > 85:\n", high_marks)
+# 4. Retrieve specific row (ID = 3)
+row = df[df["ID"] == 3]
+print("\nStudent with ID = 3:\n", row)
+# Step 5: Save retrieved data
+high_marks.to_csv("filtered_data.csv", index=False)
+print("\nData Retrieval Completed!")
+# Download (Colab only)
+from google.colab import files
+files.download("filtered_data.csv")
+Output:
+ 
+
